@@ -13,7 +13,7 @@ public class ServiceListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewServices;
     private ServiceAdapter serviceAdapter;
-    private List<Service> serviceList;
+    public static List<Service> serviceList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,7 @@ public class ServiceListActivity extends AppCompatActivity {
         serviceList.add(new Service("Poolside Cabana Rental", "Enjoy a private cabana by the pool.", 60.00, "Cabana", "Daily 9 AM - 6 PM", "Full day", R.drawable.poolside_cabana));
         // Add more services here
 
-        serviceAdapter = new ServiceAdapter(serviceList);
+        serviceAdapter = new ServiceAdapter(this, serviceList);
         recyclerViewServices.setAdapter(serviceAdapter);
     }
 }
