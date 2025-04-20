@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonProfile;
     private Button buttonViewRooms;
     private Button buttonViewServices; // Add this line
+    private Button buttonMyBookings; // Add this line
     private SharedPreferences sharedPreferences;
 
 
@@ -26,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
         textViewLoggedInEmail = findViewById(R.id.textViewLoggedInEmail);
         buttonProfile = findViewById(R.id.buttonProfile);
         sharedPreferences = getSharedPreferences("user_data", MODE_PRIVATE);
+        buttonViewRooms = findViewById(R.id.buttonViewRooms);
+        buttonViewServices = findViewById(R.id.buttonViewServices); // Initialize the button
+        buttonMyBookings = findViewById(R.id.buttonMyBookings); // Initialize the button
 
         // Get the logged-in email from SharedPreferences
         String loggedInEmail = sharedPreferences.getString("email", "No email found");
@@ -56,6 +60,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ServiceListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Set click listener for the My Bookings button
+        Button buttonMyBookings = findViewById(R.id.buttonMyBookings);
+        buttonMyBookings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MyBookingsActivity.class);
                 startActivity(intent);
             }
         });

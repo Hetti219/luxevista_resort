@@ -41,6 +41,9 @@
         <activity
             android:name=".ServiceDetailsActivity"
             android:exported="false" />
+        <activity
+            android:name=".MyBookingsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
