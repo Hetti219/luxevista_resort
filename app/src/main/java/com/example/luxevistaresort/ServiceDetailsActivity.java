@@ -1,5 +1,7 @@
 package com.example.luxevistaresort;
 
+import java.util.UUID;
+
 import android.app.TimePickerDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -127,13 +129,18 @@ public class ServiceDetailsActivity extends AppCompatActivity {
                         return;
                     }
 
+                    String confirmationId = UUID.randomUUID().toString().substring(0, 8); // Generate a unique ID
+
+                    // Create a Booking object
+                    Booking booking = new Booking("Service", serviceName, bookingDateTime, confirmationId);
+
                     // (Optional) Store basic booking info in SharedPreferences
                     SharedPreferences.Editor editor = bookingPreferences.edit();
-                    editor.putString(serviceName, "Booked on: " + bookingDateTime);
+                    editor.putString("booking_" + confirmationId, booking.toString());
                     editor.apply();
 
                     // Display confirmation message
-                    Toast.makeText(ServiceDetailsActivity.this, serviceName + " booked for " + bookingDateTime + "!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ServiceDetailsActivity.this, serviceName + " booked for " + bookingDateTime + "! Confirmation ID: " + confirmationId, Toast.LENGTH_SHORT).show();
                 }
             });
 
