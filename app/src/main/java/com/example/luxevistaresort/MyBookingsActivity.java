@@ -34,23 +34,46 @@ public class MyBookingsActivity extends AppCompatActivity {
         for (Map.Entry<String, ?> entry : allBookings.entrySet()) {
             if (entry.getKey().startsWith("booking_")) {
                 String bookingString = (String) entry.getValue();
-                // Simple parsing of the toString() output - consider a better approach (like Gson) for real apps
-                String[] parts = bookingString.split("[{}, '=]");
+
                 String bookingType = null;
                 String itemName = null;
                 String dateTime = null;
                 String confirmationId = null;
 
-                for (int i = 0; i < parts.length; i++) {
-                    if (parts[i].trim().equals("bookingType")) {
-                        bookingType = parts[i + 1].trim().replace("'", "");
-                    } else if (parts[i].trim().equals("itemName")) {
-                        itemName = parts[i + 1].trim().replace("'", "");
-                    } else if (parts[i].trim().equals("dateTime")) {
-                        dateTime = parts[i + 1].trim().replace("'", "");
+                int bookingTypeIndex = bookingString.indexOf("bookingType='");
+                if (bookingTypeIndex != -1) {
+                    int startIndex = bookingTypeIndex + "bookingType='".length();
+                    int endIndex = bookingString.indexOf("'", startIndex);
+                    if (endIndex != -1) {
+                        bookingType = bookingString.substring(startIndex, endIndex);
+                    }
+                }
+
+                int itemNameIndex = bookingString.indexOf("itemName='");
+                if (itemNameIndex != -1) {
+                    int startIndex = itemNameIndex + "itemName='".length();
+                    int endIndex = bookingString.indexOf("'", startIndex);
+                    if (endIndex != -1) {
+                        itemName = bookingString.substring(startIndex, endIndex);
+                    }
+                }
+
+                int dateTimeIndex = bookingString.indexOf("dateTime='");
+                if (dateTimeIndex != -1) {
+                    int startIndex = dateTimeIndex + "dateTime='".length();
+                    int endIndex = bookingString.indexOf("'", startIndex);
+                    if (endIndex != -1) {
+                        dateTime = bookingString.substring(startIndex, endIndex);
                         if (dateTime.equals("null")) dateTime = null;
-                    } else if (parts[i].trim().equals("confirmationId")) {
-                        confirmationId = parts[i + 1].trim().replace("'", "");
+                    }
+                }
+
+                int confirmationIdIndex = bookingString.indexOf("confirmationId='");
+                if (confirmationIdIndex != -1) {
+                    int startIndex = confirmationIdIndex + "confirmationId='".length();
+                    int endIndex = bookingString.indexOf("'", startIndex);
+                    if (endIndex != -1) {
+                        confirmationId = bookingString.substring(startIndex, endIndex);
                     }
                 }
 
