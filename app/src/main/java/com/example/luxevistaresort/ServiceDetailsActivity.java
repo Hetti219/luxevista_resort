@@ -1,10 +1,18 @@
 package com.example.luxevistaresort;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class ServiceDetailsActivity extends AppCompatActivity {
 
@@ -14,6 +22,8 @@ public class ServiceDetailsActivity extends AppCompatActivity {
     private TextView textViewServiceAvailabilityDetails;
     private TextView textViewServiceDurationDetails;
     private TextView textViewServiceDescriptionDetails;
+    private Button buttonBookService;
+    private SharedPreferences bookingPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +37,10 @@ public class ServiceDetailsActivity extends AppCompatActivity {
         textViewServiceAvailabilityDetails = findViewById(R.id.textViewServiceAvailabilityDetails);
         textViewServiceDurationDetails = findViewById(R.id.textViewServiceDurationDetails);
         textViewServiceDescriptionDetails = findViewById(R.id.textViewServiceDescriptionDetails);
+        buttonBookService = findViewById(R.id.buttonBookService);
+
+        // Initialize SharedPreferences for bookings (for this example)
+        bookingPreferences = getSharedPreferences("service_bookings", MODE_PRIVATE);
 
         // Get the service index passed from ServiceListActivity
         int serviceIndex = getIntent().getIntExtra("SERVICE_INDEX", -1);
@@ -42,6 +56,26 @@ public class ServiceDetailsActivity extends AppCompatActivity {
             textViewServiceAvailabilityDetails.setText("Availability: " + selectedService.getAvailability());
             textViewServiceDurationDetails.setText("Duration: " + selectedService.getDuration());
             textViewServiceDescriptionDetails.setText(selectedService.getDescription());
+
+            // Set OnClickListener for the Book Service button
+            buttonBookService.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Simulate booking
+                    String serviceName = selectedService.getName();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                    String bookingTime = sdf.format(new Date());
+
+                    // (Optional) Store basic booking info in SharedPreferences
+                    SharedPreferences.Editor editor = bookingPreferences.edit();
+                    editor.putString(serviceName, "Booked on: " + bookingTime);
+                    editor.apply();
+
+                    // Display confirmation message
+                    Toast.makeText(ServiceDetailsActivity.this, serviceName + " booked successfully!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
         } else {
             // Handle error if the service index is invalid
             finish(); // Go back to the previous activity
