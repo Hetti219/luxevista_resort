@@ -26,11 +26,16 @@
         android:layout_height="wrap_content"
         android:text="View Profile" />
 
-
     <Button
         android:id="@+id/buttonViewRooms"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="View Rooms" />
+
+    <Button
+        android:id="@+id/buttonViewServices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Services" />
 
 </LinearLayout>

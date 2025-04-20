@@ -13,6 +13,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView textViewLoggedInEmail;
     private Button buttonProfile;
+    private Button buttonViewRooms;
+    private Button buttonViewServices; // Add this line
     private SharedPreferences sharedPreferences;
 
 
@@ -44,6 +46,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, RoomListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Set click listener for the View Services button
+        Button buttonViewServices = findViewById(R.id.buttonViewServices);
+        buttonViewServices.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ServiceListActivity.class);
                 startActivity(intent);
             }
         });
