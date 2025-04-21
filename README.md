@@ -64,7 +64,7 @@ To get a local copy up and running, follow these simple steps:
     * Git
 2.  **Clone the repository:**
     ```bash
-    git clone <your-repository-url>
+    git clone https://github.com/Hetti219/luxevista_resort.git
     ```
 3.  **Open in Android Studio:**
     * Launch Android Studio.
