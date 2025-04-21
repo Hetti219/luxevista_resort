@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_rooms"
+        android:icon="@drawable/ic_hotel" android:title="Rooms" />
+
+    <item
+        android:id="@+id/navigation_services"
+        android:icon="@drawable/ic_spa" android:title="Services" />
+
+    <item
+        android:id="@+id/navigation_bookings"
+        android:icon="@drawable/ic_list_alt" android:title="Bookings" />
+
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/ic_person" android:title="Profile" />
+
+</menu>
