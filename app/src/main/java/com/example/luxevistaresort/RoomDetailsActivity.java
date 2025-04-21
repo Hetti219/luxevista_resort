@@ -1,25 +1,37 @@
 package com.example.luxevistaresort;
 
-import java.util.UUID;
-
+import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.UUID;
 
 public class RoomDetailsActivity extends AppCompatActivity {
 
     private ImageView imageViewRoomDetails;
     private TextView textViewRoomTypeDetails;
-    private TextView textViewPriceDetails;
-    private TextView textViewDescriptionDetails;
+    private TextView textViewRoomPriceDetails;
+    private TextView textViewRoomDescriptionDetails;
     private Button buttonBookNow;
-    private SharedPreferences bookingPreferences;
+    private SharedPreferences roomPreferences;
+    private TextView textViewCheckInDate;
+    private Button buttonPickCheckInDate;
+    private TextView textViewCheckOutDate;
+    private Button buttonPickCheckOutDate;
+    private int checkInYear, checkInMonth, checkInDay;
+    private int checkOutYear, checkOutMonth, checkOutDay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,45 +41,107 @@ public class RoomDetailsActivity extends AppCompatActivity {
         // Initialize views
         imageViewRoomDetails = findViewById(R.id.imageViewRoomDetails);
         textViewRoomTypeDetails = findViewById(R.id.textViewRoomTypeDetails);
-        textViewPriceDetails = findViewById(R.id.textViewPriceDetails);
-        textViewDescriptionDetails = findViewById(R.id.textViewDescriptionDetails);
+        textViewRoomPriceDetails = findViewById(R.id.textViewPriceDetails);
+        textViewRoomDescriptionDetails = findViewById(R.id.textViewDescriptionDetails);
         buttonBookNow = findViewById(R.id.buttonBookNow);
+        textViewCheckInDate = findViewById(R.id.textViewCheckInDate);
+        buttonPickCheckInDate = findViewById(R.id.buttonPickCheckInDate);
+        textViewCheckOutDate = findViewById(R.id.textViewCheckOutDate);
+        buttonPickCheckOutDate = findViewById(R.id.buttonPickCheckOutDate);
 
-        // Initialize SharedPreferences for bookings (for this example)
-        bookingPreferences = getSharedPreferences("room_bookings", MODE_PRIVATE);
 
-        // Get the room index passed from RoomListActivity
+        // Initialize SharedPreferences for room bookings
+        roomPreferences = getSharedPreferences("room_bookings", MODE_PRIVATE);
+
+        // Get the selected room index passed from RoomListActivity
         int roomIndex = getIntent().getIntExtra("ROOM_INDEX", -1);
 
-        // Fetch the selected room from the list (for now, we'll use the same static list)
+        // Fetch the selected room from the list
         if (roomIndex >= 0 && roomIndex < RoomListActivity.roomList.size()) {
             Room selectedRoom = RoomListActivity.roomList.get(roomIndex);
 
             // Populate the views with the room details
             imageViewRoomDetails.setImageResource(selectedRoom.getImageResourceId());
             textViewRoomTypeDetails.setText(selectedRoom.getRoomType());
-            textViewPriceDetails.setText("$" + String.format("%.2f", selectedRoom.getPricePerNight()));
-            textViewDescriptionDetails.setText(selectedRoom.getDescription());
+            textViewRoomPriceDetails.setText("$" + String.format("%.2f", selectedRoom.getPricePerNight()));
+            textViewRoomDescriptionDetails.setText(selectedRoom.getDescription());
 
+            // Set OnClickListener for the Pick Check-in Date button
+            buttonPickCheckInDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Get current date
+                    final Calendar c = Calendar.getInstance();
+                    checkInYear = c.get(Calendar.YEAR);
+                    checkInMonth = c.get(Calendar.MONTH);
+                    checkInDay = c.get(Calendar.DAY_OF_MONTH);
 
+                    // Create and show the DatePickerDialog
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(RoomDetailsActivity.this,
+                            (view, year, monthOfYear, dayOfMonth) -> {
+                                // Update the selected date TextView
+                                RoomDetailsActivity.this.checkInYear = year;
+                                RoomDetailsActivity.this.checkInMonth = monthOfYear;
+                                RoomDetailsActivity.this.checkInDay = dayOfMonth;
+                                textViewCheckInDate.setText(String.format(Locale.getDefault(), "%d-%02d-%02d", year, monthOfYear + 1, dayOfMonth));
+                            }, checkInYear, checkInMonth, checkInDay);
+                    datePickerDialog.show();
+                }
+            });
+
+            // Set OnClickListener for the Pick Check-out Date button
+            buttonPickCheckOutDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Get current date
+                    final Calendar c = Calendar.getInstance();
+                    checkOutYear = c.get(Calendar.YEAR);
+                    checkOutMonth = c.get(Calendar.MONTH);
+                    checkOutDay = c.get(Calendar.DAY_OF_MONTH);
+
+                    // Create and show the DatePickerDialog
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(RoomDetailsActivity.this,
+                            (view, year, monthOfYear, dayOfMonth) -> {
+                                // Update the selected date TextView
+                                RoomDetailsActivity.this.checkOutYear = year;
+                                RoomDetailsActivity.this.checkOutMonth = monthOfYear;
+                                RoomDetailsActivity.this.checkOutDay = dayOfMonth;
+                                textViewCheckOutDate.setText(String.format(Locale.getDefault(), "%d-%02d-%02d", year, monthOfYear + 1, dayOfMonth));
+                            }, checkOutYear, checkOutMonth, checkOutDay);
+                    datePickerDialog.show();
+                }
+            });
+
+            // Set OnClickListener for the Book Now button
             buttonBookNow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String roomType = selectedRoom.getRoomType();
+                    String checkInDate = textViewCheckInDate.getText().toString();
+                    String checkOutDate = textViewCheckOutDate.getText().toString();
+
+                    if (checkInDate.equals("Not selected") || checkOutDate.equals("Not selected")) {
+                        Toast.makeText(RoomDetailsActivity.this, "Please select check-in and check-out dates", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String bookingDateTime = "Check-in: " + checkInDate + ", Check-out: " + checkOutDate;
                     String confirmationId = UUID.randomUUID().toString().substring(0, 8); // Generate a short unique ID
 
                     // Create a Booking object
-                    Booking booking = new Booking("Room", roomType, null, confirmationId);
+                    Booking booking = new Booking("Room", roomType, bookingDateTime, confirmationId);
 
-                    // Store the booking information (using SharedPreferences for now)
-                    SharedPreferences.Editor editor = bookingPreferences.edit();
-                    editor.putString("booking_" + confirmationId, booking.toString()); // Store as a string for simplicity
+                    // Store the booking information in a separate SharedPreferences for rooms
+                    SharedPreferences.Editor editor = roomPreferences.edit();
+                    editor.putString("booking_" + confirmationId, booking.toString());
                     editor.apply();
 
                     // Display confirmation message
-                    Toast.makeText(RoomDetailsActivity.this, roomType + " booked! Confirmation ID: " + confirmationId, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RoomDetailsActivity.this, roomType + " booked! " + bookingDateTime + " Confirmation ID: " + confirmationId, Toast.LENGTH_LONG).show();
                 }
             });
+
+
         } else {
             // Handle error if the room index is invalid
             finish(); // Go back to the previous activity

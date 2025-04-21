@@ -41,6 +41,64 @@
             android:text="Room Description goes here..."
             android:textSize="16sp" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Check-in: "
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/textViewCheckInDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Not selected"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/buttonPickCheckInDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pick Date" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Check-out: "
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/textViewCheckOutDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Not selected"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/buttonPickCheckOutDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pick Date" />
+
+        </LinearLayout>
+
         <Button
             android:id="@+id/buttonBookNow"
             android:layout_width="wrap_content"

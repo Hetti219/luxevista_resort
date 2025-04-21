@@ -1,5 +1,6 @@
 package com.example.luxevistaresort;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,6 +31,7 @@ public class RoomListActivity extends AppCompatActivity {
     private Button buttonApplyFilters;
     private List<Room> originalRoomList;
     private Spinner spinnerSortBy;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +45,16 @@ public class RoomListActivity extends AppCompatActivity {
         editTextMaxPrice = findViewById(R.id.editTextMaxPrice);
         buttonApplyFilters = findViewById(R.id.buttonApplyFilters);
         spinnerSortBy = findViewById(R.id.spinnerSortBy);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+
+        // Set the currently active item in the BottomNavigationView
+        bottomNavigationView.setSelectedItemId(R.id.navigation_rooms);
 
         // Create a list of sample rooms
         roomList = new ArrayList<>();
         roomList.add(new Room("Ocean View Suite", "Luxurious suite with stunning ocean views.", 250.00, true, R.drawable.ocean_suite));
         roomList.add(new Room("Deluxe Room", "Comfortable room with a king-size bed.", 150.00, true, R.drawable.deluxe_room));
-        roomList.add(new Room("Standard Double", "Standard room with two double beds.", 120.00, false, R.drawable.deluxe_room));
+        roomList.add(new Room("Standard Double", "Standard room with two double beds.", 120.00, false, R.drawable.standard_double));
         roomList.add(new Room("Ocean View Suite", "Another ocean view suite.", 280.00, true, R.drawable.ocean_suite));
         roomList.add(new Room("Deluxe Room", "A cozy deluxe room.", 160.00, true, R.drawable.deluxe_room));
 
@@ -85,6 +93,27 @@ public class RoomListActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
                 // Do nothing
             }
+        });
+
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            Intent intent = null;
+            if (item.getItemId() == R.id.navigation_rooms) {
+                // Do nothing, already on this screen
+                return true;
+            } else if (item.getItemId() == R.id.navigation_services) {
+                intent = new Intent(RoomListActivity.this, ServiceListActivity.class);
+            } else if (item.getItemId() == R.id.navigation_bookings) {
+                intent = new Intent(RoomListActivity.this, MyBookingsActivity.class);
+            } else if (item.getItemId() == R.id.navigation_profile) {
+                intent = new Intent(RoomListActivity.this, ProfileActivity.class);
+            }
+
+            if (intent != null) {
+                startActivity(intent);
+                finish(); // Optional: finish the current activity to prevent going back to it
+                return true;
+            }
+            return false;
         });
     }
 
@@ -125,10 +154,6 @@ public class RoomListActivity extends AppCompatActivity {
                 roomList.sort(Comparator.comparing(Room::isAvailable).reversed()); // Available rooms first
                 break;
             default: // "Default" or any other case, revert to the original order after filtering
-                // We don't have a way to easily revert to the absolute original order
-                // after filtering and multiple sorts. A better approach might be to
-                // keep the filtered list and sort it. For this simple example, we'll
-                // just rely on the order after filtering.
                 break;
         }
         roomAdapter.notifyDataSetChanged();
