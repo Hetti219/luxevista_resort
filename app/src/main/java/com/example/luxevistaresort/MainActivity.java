@@ -22,9 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
         textViewLoggedInEmail = findViewById(R.id.textViewLoggedInEmail);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("user_data", MODE_PRIVATE);
 
-        String loggedInEmail = sharedPreferences.getString("loggedInEmail", "No email found");
+        String loggedInEmail = sharedPreferences.getString("email", "No email found");
         textViewLoggedInEmail.setText("Logged in as: " + loggedInEmail);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {

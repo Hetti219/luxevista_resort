@@ -1,10 +1,13 @@
 package com.example.luxevistaresort;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +15,9 @@ import java.util.List;
 public class ServiceListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewServices;
-    private ServiceAdapter serviceAdapter;
     public static List<Service> serviceList;
+    private ServiceAdapter serviceAdapter;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +26,9 @@ public class ServiceListActivity extends AppCompatActivity {
 
         recyclerViewServices = findViewById(R.id.recyclerViewServices);
         recyclerViewServices.setLayoutManager(new LinearLayoutManager(this));
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+
+        bottomNavigationView.setSelectedItemId(R.id.navigation_services);
 
         // Create a list of sample services (replace with your actual data later)
         serviceList = new ArrayList<>();
@@ -33,5 +40,26 @@ public class ServiceListActivity extends AppCompatActivity {
 
         serviceAdapter = new ServiceAdapter(this, serviceList);
         recyclerViewServices.setAdapter(serviceAdapter);
+
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            Intent intent = null;
+            if (item.getItemId() == R.id.navigation_rooms) {
+                intent = new Intent(ServiceListActivity.this, RoomListActivity.class);
+            } else if (item.getItemId() == R.id.navigation_services) {
+                // Do nothing, already on this screen
+                return true;
+            } else if (item.getItemId() == R.id.navigation_bookings) {
+                intent = new Intent(ServiceListActivity.this, MyBookingsActivity.class);
+            } else if (item.getItemId() == R.id.navigation_profile) {
+                intent = new Intent(ServiceListActivity.this, ProfileActivity.class);
+            }
+
+            if (intent != null) {
+                startActivity(intent);
+                finish();
+                return true;
+            }
+            return false;
+        });
     }
 }
