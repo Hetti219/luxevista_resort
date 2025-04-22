@@ -67,6 +67,8 @@ public class MyBookingsActivity extends AppCompatActivity {
                 return true; // Do nothing, already on this screen
             } else if (item.getItemId() == R.id.navigation_profile) {
                 intent = new Intent(MyBookingsActivity.this, ProfileActivity.class);
+            } else if (item.getItemId() == R.id.navigation_attractions) {
+                intent = new Intent(MyBookingsActivity.this, AttractionsActivity.class);
             }
 
             if (intent != null) {

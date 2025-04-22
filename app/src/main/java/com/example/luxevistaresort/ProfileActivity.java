@@ -40,6 +40,8 @@ public class ProfileActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.navigation_profile) {
                 // Do nothing, already on this screen
                 return true;
+            } else if (item.getItemId() == R.id.navigation_attractions) {
+                intent = new Intent(ProfileActivity.this, AttractionsActivity.class);
             }
 
             if (intent != null) {

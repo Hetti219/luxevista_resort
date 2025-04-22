@@ -106,6 +106,8 @@ public class RoomListActivity extends AppCompatActivity {
                 intent = new Intent(RoomListActivity.this, MyBookingsActivity.class);
             } else if (item.getItemId() == R.id.navigation_profile) {
                 intent = new Intent(RoomListActivity.this, ProfileActivity.class);
+            } else if (item.getItemId() == R.id.navigation_attractions) {
+                intent = new Intent(RoomListActivity.this, AttractionsActivity.class);
             }
 
             if (intent != null) {

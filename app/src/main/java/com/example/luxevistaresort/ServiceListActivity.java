@@ -52,6 +52,8 @@ public class ServiceListActivity extends AppCompatActivity {
                 intent = new Intent(ServiceListActivity.this, MyBookingsActivity.class);
             } else if (item.getItemId() == R.id.navigation_profile) {
                 intent = new Intent(ServiceListActivity.this, ProfileActivity.class);
+            } else if (item.getItemId() == R.id.navigation_attractions) {
+                intent = new Intent(ServiceListActivity.this, AttractionsActivity.class);
             }
 
             if (intent != null) {
