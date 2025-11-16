@@ -50,15 +50,17 @@ public class ServiceDetailsActivity extends AppCompatActivity {
         textViewSelectedTime = findViewById(R.id.textViewSelectedTime);
         buttonPickTime = findViewById(R.id.buttonPickTime);
 
-        // Initialize SharedPreferences for bookings (for this example)
+        // Initialize SharedPreferences for bookings
         bookingPreferences = getSharedPreferences("service_bookings", MODE_PRIVATE);
 
         // Get the service index passed from ServiceListActivity
-        int serviceIndex = getIntent().getIntExtra("SERVICE_INDEX", -1);
+        int serviceIndex = getIntent().getIntExtra(Constants.EXTRA_SERVICE_INDEX, -1);
 
-        // Fetch the selected service from the list
-        if (serviceIndex >= 0 && serviceIndex < ServiceListActivity.serviceList.size()) {
-            Service selectedService = ServiceListActivity.serviceList.get(serviceIndex);
+        // Fetch the selected service from the repository
+        DataRepository dataRepository = DataRepository.getInstance();
+        Service selectedService = dataRepository.getServiceAt(serviceIndex);
+
+        if (selectedService != null) {
 
             // Populate the views with the service details
             imageViewServiceDetails.setImageResource(selectedService.getImageResourceId());
@@ -68,80 +70,68 @@ public class ServiceDetailsActivity extends AppCompatActivity {
             textViewServiceDurationDetails.setText("Duration: " + selectedService.getDuration());
             textViewServiceDescriptionDetails.setText(selectedService.getDescription());
 
-            // Set OnClickListener for the Pick Date button
-            buttonPickDate.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Get current date
-                    final Calendar c = Calendar.getInstance();
-                    year = c.get(Calendar.YEAR);
-                    month = c.get(Calendar.MONTH);
-                    day = c.get(Calendar.DAY_OF_MONTH);
+            // Lambda expression for Pick Date button
+            buttonPickDate.setOnClickListener(v -> {
+                // Get current date
+                final Calendar c = Calendar.getInstance();
+                year = c.get(Calendar.YEAR);
+                month = c.get(Calendar.MONTH);
+                day = c.get(Calendar.DAY_OF_MONTH);
 
-                    // Create and show the DatePickerDialog
-                    android.app.DatePickerDialog datePickerDialog = new android.app.DatePickerDialog(ServiceDetailsActivity.this,
-                            (view, year, monthOfYear, dayOfMonth) -> {
-                                // Update the selected date TextView
-                                ServiceDetailsActivity.this.year = year;
-                                ServiceDetailsActivity.this.month = monthOfYear;
-                                ServiceDetailsActivity.this.day = dayOfMonth;
-                                textViewSelectedDate.setText(String.format(Locale.getDefault(), "%d-%02d-%02d", year, monthOfYear + 1, dayOfMonth));
-                            }, year, month, day);
-                    datePickerDialog.show();
-                }
+                // Create and show the DatePickerDialog
+                android.app.DatePickerDialog datePickerDialog = new android.app.DatePickerDialog(ServiceDetailsActivity.this,
+                        (view, year, monthOfYear, dayOfMonth) -> {
+                            // Update the selected date TextView
+                            ServiceDetailsActivity.this.year = year;
+                            ServiceDetailsActivity.this.month = monthOfYear;
+                            ServiceDetailsActivity.this.day = dayOfMonth;
+                            textViewSelectedDate.setText(String.format(Locale.getDefault(), "%d-%02d-%02d", year, monthOfYear + 1, dayOfMonth));
+                        }, year, month, day);
+                datePickerDialog.show();
             });
 
-            // Set OnClickListener for the Pick Time button
-            buttonPickTime.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Get current time
-                    final Calendar c = Calendar.getInstance();
-                    hour = c.get(Calendar.HOUR_OF_DAY);
-                    minute = c.get(Calendar.MINUTE);
+            // Lambda expression for Pick Time button
+            buttonPickTime.setOnClickListener(v -> {
+                // Get current time
+                final Calendar c = Calendar.getInstance();
+                hour = c.get(Calendar.HOUR_OF_DAY);
+                minute = c.get(Calendar.MINUTE);
 
-                    // Create and show the TimePickerDialog
-                    TimePickerDialog timePickerDialog = new TimePickerDialog(ServiceDetailsActivity.this,
-                            (view, hourOfDay, minute) -> {
-                                // Update the selected time TextView
-                                ServiceDetailsActivity.this.hour = hourOfDay;
-                                ServiceDetailsActivity.this.minute = minute;
-                                textViewSelectedTime.setText(String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute));
-                            }, hour, minute, android.text.format.DateFormat.is24HourFormat(ServiceDetailsActivity.this));
-                    timePickerDialog.show();
-                }
+                // Create and show the TimePickerDialog
+                TimePickerDialog timePickerDialog = new TimePickerDialog(ServiceDetailsActivity.this,
+                        (view, hourOfDay, minute) -> {
+                            // Update the selected time TextView
+                            ServiceDetailsActivity.this.hour = hourOfDay;
+                            ServiceDetailsActivity.this.minute = minute;
+                            textViewSelectedTime.setText(String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute));
+                        }, hour, minute, android.text.format.DateFormat.is24HourFormat(ServiceDetailsActivity.this));
+                timePickerDialog.show();
             });
 
-            // Set OnClickListener for the Book Service button
-            buttonBookService.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Simulate booking
-                    String serviceName = selectedService.getName();
-                    String selectedDate = textViewSelectedDate.getText().toString();
-                    String selectedTime = textViewSelectedTime.getText().toString();
+            // Lambda expression for Book Service button
+            buttonBookService.setOnClickListener(v -> {
+                String serviceName = selectedService.getName();
+                String selectedDate = textViewSelectedDate.getText().toString();
+                String selectedTime = textViewSelectedTime.getText().toString();
 
-                    String bookingDateTime = "";
-                    if (!selectedDate.equals("Not selected") && !selectedTime.equals("Not selected")) {
-                        bookingDateTime = selectedDate + " " + selectedTime;
-                    } else {
-                        Toast.makeText(ServiceDetailsActivity.this, "Please select a date and time", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    String confirmationId = UUID.randomUUID().toString().substring(0, 8); // Generate a unique ID
-
-                    // Create a Booking object
-                    Booking booking = new Booking("Service", serviceName, bookingDateTime, confirmationId);
-
-                    // (Optional) Store basic booking info in SharedPreferences
-                    SharedPreferences.Editor editor = bookingPreferences.edit();
-                    editor.putString("booking_" + confirmationId, booking.toString());
-                    editor.apply();
-
-                    // Display confirmation message
-                    Toast.makeText(ServiceDetailsActivity.this, serviceName + " booked for " + bookingDateTime + "! Confirmation ID: " + confirmationId, Toast.LENGTH_SHORT).show();
+                if (selectedDate.equals("Not selected") || selectedTime.equals("Not selected")) {
+                    Toast.makeText(ServiceDetailsActivity.this, "Please select a date and time", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                String bookingDateTime = selectedDate + " " + selectedTime;
+                String confirmationId = UUID.randomUUID().toString().substring(0, 8);
+
+                // Create a Booking object
+                Booking booking = new Booking("Service", serviceName, bookingDateTime, confirmationId);
+
+                // Store booking info in SharedPreferences
+                SharedPreferences.Editor editor = bookingPreferences.edit();
+                editor.putString("booking_" + confirmationId, booking.toString());
+                editor.apply();
+
+                // Display confirmation message
+                Toast.makeText(ServiceDetailsActivity.this, serviceName + " booked for " + bookingDateTime + "! Confirmation ID: " + confirmationId, Toast.LENGTH_SHORT).show();
             });
 
         } else {

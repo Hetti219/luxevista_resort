@@ -17,10 +17,12 @@ public class RecommendedServiceAdapter extends RecyclerView.Adapter<RecommendedS
 
     private Context context;
     private List<Service> recommendedServices;
+    private List<Service> allServices;
 
-    public RecommendedServiceAdapter(Context context, List<Service> recommendedServices) {
+    public RecommendedServiceAdapter(Context context, List<Service> recommendedServices, List<Service> allServices) {
         this.context = context;
         this.recommendedServices = recommendedServices;
+        this.allServices = allServices;
     }
 
     @NonNull
@@ -35,9 +37,12 @@ public class RecommendedServiceAdapter extends RecyclerView.Adapter<RecommendedS
         Service service = recommendedServices.get(position);
         holder.textViewRecommendedItemName.setText(service.getName());
         holder.imageViewRecommendedItem.setImageResource(service.getImageResourceId());
+
+        // Lambda expression for click listener - pass index directly instead of using indexOf
         holder.itemView.setOnClickListener(v -> {
+            // Since recommended services are the first N services, position is the same as index in allServices
             Intent intent = new Intent(context, ServiceDetailsActivity.class);
-            intent.putExtra("SERVICE_INDEX", ServiceListActivity.serviceList.indexOf(service)); // Pass the index
+            intent.putExtra(Constants.EXTRA_SERVICE_INDEX, position);
             context.startActivity(intent);
         });
     }
