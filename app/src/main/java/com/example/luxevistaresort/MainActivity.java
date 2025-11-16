@@ -3,19 +3,15 @@ package com.example.luxevistaresort;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private BottomNavigationView bottomNavigationView;
     private SharedPreferences sharedPreferences;
@@ -23,44 +19,66 @@ public class MainActivity extends AppCompatActivity {
     private RecommendedRoomAdapter recommendedRoomAdapter;
     private RecyclerView recyclerViewRecommendedServices;
     private RecommendedServiceAdapter recommendedServiceAdapter;
+    private DataRepository dataRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize repository
+        dataRepository = DataRepository.getInstance();
 
+        // Initialize views
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        sharedPreferences = getSharedPreferences("user_data", MODE_PRIVATE);
-
+        sharedPreferences = getSharedPreferences(Constants.PREFS_USER_DATA, MODE_PRIVATE);
 
         // Initialize Recommended Rooms RecyclerView
+        setupRecommendedRooms();
+
+        // Initialize Recommended Services RecyclerView
+        setupRecommendedServices();
+
+        // Setup navigation - MainActivity doesn't have a selected item in bottom nav
+        setupBottomNavigationForHome();
+    }
+
+    private void setupRecommendedRooms() {
         recyclerViewRecommendedRooms = findViewById(R.id.recyclerViewRecommendedRooms);
         LinearLayoutManager layoutManagerRooms = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerViewRecommendedRooms.setLayoutManager(layoutManagerRooms);
-        List<Room> recommendedRooms = getRecommendedRooms(); // Implement this method
-        recommendedRoomAdapter = new RecommendedRoomAdapter(this, recommendedRooms);
+        List<Room> recommendedRooms = dataRepository.getRecommendedRooms(Constants.MAX_RECOMMENDED_ITEMS);
+        recommendedRoomAdapter = new RecommendedRoomAdapter(this, recommendedRooms, dataRepository.getRoomList());
         recyclerViewRecommendedRooms.setAdapter(recommendedRoomAdapter);
+    }
 
-        // Initialize Recommended Services RecyclerView
+    private void setupRecommendedServices() {
         recyclerViewRecommendedServices = findViewById(R.id.recyclerViewRecommendedServices);
         LinearLayoutManager layoutManagerServices = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerViewRecommendedServices.setLayoutManager(layoutManagerServices);
-        List<Service> recommendedServices = getRecommendedServices(); // Implement this method
-        recommendedServiceAdapter = new RecommendedServiceAdapter(this, recommendedServices);
+        List<Service> recommendedServices = dataRepository.getRecommendedServices(Constants.MAX_RECOMMENDED_ITEMS);
+        recommendedServiceAdapter = new RecommendedServiceAdapter(this, recommendedServices, dataRepository.getServiceList());
         recyclerViewRecommendedServices.setAdapter(recommendedServiceAdapter);
+    }
+
+    private void setupBottomNavigationForHome() {
+        if (bottomNavigationView == null) {
+            return;
+        }
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Intent intent = null;
-            if (item.getItemId() == R.id.navigation_rooms) {
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.navigation_rooms) {
                 intent = new Intent(MainActivity.this, RoomListActivity.class);
-            } else if (item.getItemId() == R.id.navigation_services) {
+            } else if (itemId == R.id.navigation_services) {
                 intent = new Intent(MainActivity.this, ServiceListActivity.class);
-            } else if (item.getItemId() == R.id.navigation_bookings) {
+            } else if (itemId == R.id.navigation_bookings) {
                 intent = new Intent(MainActivity.this, MyBookingsActivity.class);
-            } else if (item.getItemId() == R.id.navigation_profile) {
+            } else if (itemId == R.id.navigation_profile) {
                 intent = new Intent(MainActivity.this, ProfileActivity.class);
-            } else if (item.getItemId() == R.id.navigation_attractions) {
+            } else if (itemId == R.id.navigation_attractions) {
                 intent = new Intent(MainActivity.this, AttractionsActivity.class);
             }
 
@@ -70,36 +88,5 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-    }
-
-    // Dummy method to get recommended rooms
-    private List<Room> getRecommendedRooms() {
-        List<Room> allRooms = RoomListActivity.roomList;
-        if (allRooms != null) {
-            Log.d("MainActivity", "Number of rooms available: " + allRooms.size());
-            if (allRooms.size() >= 2) {
-                List<Room> recommendations = allRooms.subList(0, Math.min(2, allRooms.size()));
-                Log.d("MainActivity", "Recommended rooms count: " + recommendations.size());
-                return recommendations;
-            }
-        } else {
-            Log.d("MainActivity", "Room list is null");
-        }
-        return new ArrayList<>();
-    }
-
-    private List<Service> getRecommendedServices() {
-        List<Service> allServices = ServiceListActivity.serviceList;
-        if (allServices != null) {
-            Log.d("MainActivity", "Number of services available: " + allServices.size());
-            if (allServices.size() >= 2) {
-                List<Service> recommendations = allServices.subList(0, Math.min(2, allServices.size()));
-                Log.d("MainActivity", "Recommended services count: " + recommendations.size());
-                return recommendations;
-            }
-        } else {
-            Log.d("MainActivity", "Service list is null");
-        }
-        return new ArrayList<>();
     }
 }

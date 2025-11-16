@@ -1,6 +1,5 @@
 package com.example.luxevistaresort;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -33,24 +32,18 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceV
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ServiceViewHolder holder, @SuppressLint("RecyclerView") int position) {
+    public void onBindViewHolder(@NonNull ServiceViewHolder holder, int position) {
         Service currentService = serviceList.get(position);
         holder.textViewServiceName.setText(currentService.getName());
         holder.textViewServicePrice.setText("$" + String.format("%.2f", currentService.getPrice()));
         holder.textViewServiceCategory.setText("Category: " + currentService.getCategory());
         holder.imageViewService.setImageResource(currentService.getImageResourceId());
 
-        // Set OnClickListener for the item view
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create an Intent to start ServiceDetailsActivity
-                Intent intent = new Intent(context, ServiceDetailsActivity.class);
-                // Pass the position of the clicked item as an extra
-                intent.putExtra("SERVICE_INDEX", position);
-                // Start the activity
-                context.startActivity(intent);
-            }
+        // Lambda expression for click listener
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ServiceDetailsActivity.class);
+            intent.putExtra(Constants.EXTRA_SERVICE_INDEX, position);
+            context.startActivity(intent);
         });
     }
 

@@ -39,17 +39,11 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         holder.textViewAvailability.setText(currentRoom.isAvailable() ? "Available" : "Not Available");
         holder.imageViewRoom.setImageResource(currentRoom.getImageResourceId());
 
-        // Set OnClickListener for the item view
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create an Intent to start RoomDetailsActivity
-                Intent intent = new Intent(context, RoomDetailsActivity.class);
-                // Pass the position of the clicked item as an extra
-                intent.putExtra("ROOM_INDEX", position);
-                // Start the activity
-                context.startActivity(intent);
-            }
+        // Lambda expression for click listener
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, RoomDetailsActivity.class);
+            intent.putExtra(Constants.EXTRA_ROOM_INDEX, position);
+            context.startActivity(intent);
         });
     }
 

@@ -15,10 +15,12 @@ public class RecommendedRoomAdapter extends RecyclerView.Adapter<RecommendedRoom
 
     private Context context;
     private List<Room> recommendedRooms;
+    private List<Room> allRooms;
 
-    public RecommendedRoomAdapter(Context context, List<Room> recommendedRooms) {
+    public RecommendedRoomAdapter(Context context, List<Room> recommendedRooms, List<Room> allRooms) {
         this.context = context;
         this.recommendedRooms = recommendedRooms;
+        this.allRooms = allRooms;
     }
 
     @NonNull
@@ -33,9 +35,12 @@ public class RecommendedRoomAdapter extends RecyclerView.Adapter<RecommendedRoom
         Room room = recommendedRooms.get(position);
         holder.textViewRecommendedItemName.setText(room.getRoomType());
         holder.imageViewRecommendedItem.setImageResource(room.getImageResourceId());
+
+        // Lambda expression for click listener - pass index directly instead of using indexOf
         holder.itemView.setOnClickListener(v -> {
+            // Since recommended rooms are the first N rooms, position is the same as index in allRooms
             Intent intent = new Intent(context, RoomDetailsActivity.class);
-            intent.putExtra("ROOM_INDEX", RoomListActivity.roomList.indexOf(room)); // Pass the index to fetch details
+            intent.putExtra(Constants.EXTRA_ROOM_INDEX, position);
             context.startActivity(intent);
         });
     }
